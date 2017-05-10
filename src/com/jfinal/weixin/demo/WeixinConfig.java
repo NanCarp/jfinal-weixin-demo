@@ -57,6 +57,8 @@ public class WeixinConfig extends JFinalConfig {
 		me.add("/oauth2",RedirectUri.class);
 		me.add("/user",UserController.class);
 		me.add("/jssdk",ShareController.class,"_front");
+		
+		me.add("/test",TestController.class);
 
 		
 		

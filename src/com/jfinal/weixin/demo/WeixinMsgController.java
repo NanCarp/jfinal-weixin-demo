@@ -61,7 +61,10 @@ public class WeixinMsgController extends MsgControllerAdapter {
 			+ "点击<a href='" + Constant.getHost + "/product/3'>【我要送花】</a>，传递情谊\n"
 			+ "花田直采，花量大、花新鲜、花期长，比比就知道！\n\n"
 			+ "更多操作！\n"
-			+ "点击<a href='" + Constant.getHost + "/api/createmenu'>【更改菜单】</a>\n";
+			+ "点击<a href='" + Constant.getHost + "/api/createmenu'>【更改菜单】</a>\n"
+			+ "点击<a href='" + Constant.getHost + "/test/customService'>【客服消息】</a>\n"
+			+ "点击<a href='" + Constant.getHost + "/test/message'>【群发消息】</a>\n\n"
+			+ "点击<a href='" + Constant.getHost + "/'>【主页】</a>\n";
 
 	/**
 	 * 如果要支持多公众账号，只需要在此返回各个公众号对应的 ApiConfig 对象即可 可以通过在请求 url 中挂参数来动态从数据库中获取

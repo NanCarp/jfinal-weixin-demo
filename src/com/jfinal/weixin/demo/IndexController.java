@@ -6,14 +6,24 @@
 
 package com.jfinal.weixin.demo;
 
+import com.dao.FCDao;
+import com.interceptor.FrontInterceptor;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.Record;
 
 /**
  * @author Javen
  * 2016年1月15日
  */
+@Before(FrontInterceptor.class)
 public class IndexController extends Controller {
 	public void index(){
+		setAttr("flower1", FCDao.getProductInfo(1));
+		setAttr("flower2", FCDao.getProductInfo(2));
+		Record account = getSessionAttr("account");
+		int isbuy = account.getInt("isbuy");
+		setAttr("aroundlist", FCDao.getAround(isbuy));	// 周边
 		render("index.html");
 	}
 	
