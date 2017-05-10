@@ -7,9 +7,12 @@
 package com.jfinal.weixin.demo;
 
 import com.dao.FCDao;
+import com.dao.MCDao;
 import com.interceptor.FrontInterceptor;
 import com.jfinal.aop.Before;
+import com.jfinal.aop.Clear;
 import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
 /**
@@ -62,5 +65,26 @@ public class IndexController extends Controller {
 		}else{
 			setAttr("flower", FCDao.getAroundInfo(pid));*/
 			render("product_around.html");
+	}
+	
+	// 常见问题
+	public void question(){
+		Integer pageno = getParaToInt(0)==null?1:getParaToInt(0);
+		Page<Record> page = MCDao.getQuestion(pageno, 16);
+		if(pageno == 1){
+			setAttr("pageno", page.getPageNumber());
+			setAttr("totalpage", page.getTotalPage());
+			setAttr("totalrow", page.getTotalRow());
+			setAttr("questionlist", page.getList());
+			render("question.html");
+		}else{
+			renderJson(page.getList());
+		}
+	}
+		
+	// 禁用账号进入页面
+	@Clear
+	public void freeze(){
+		render("freeze.html");
 	}
 }

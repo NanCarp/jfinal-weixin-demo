@@ -23,6 +23,24 @@ public class Constant {
         }
     }
     
+    // 订单状态
+    public static enum orderState{
+ 	   STATE0("未付款", 0),
+ 	   STATE1("服务中", 1),
+ 	   STATE2("待评价", 2),
+ 	   STATE3("已完成", 3),
+ 	   STATE4("退款", 4),
+ 	   STATE5("交易取消", 5);
+ 	  
+        public String name;
+        public int state;
+
+        private orderState(String name, int state) {
+            this.name = name;
+            this.state = state;
+        }
+    }
+    
     // 用户同意授权，获取code
     public static String getCode = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect";
     // 通过code换取网页授权access_token

@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import com.jfinal.kit.HttpKit;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
@@ -22,6 +24,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.weixin.sdk.api.ApiResult;
 import com.jfinal.weixin.sdk.api.UserApi;
 import com.jfinal.weixin.util.Constant;
+import com.jfinal.weixin.util.Constant.orderState;
 import com.jfinal.weixin.util.Constant.seedType;
 
 /**
@@ -68,9 +71,79 @@ public class FCDao {
 		return pro;
 	}
 
+	// 签到 200
+	public static boolean signin(int aid){
+		boolean result = false;
+		Number num = Db.queryNumber("select count(1) from f_flowerseed where aid=? and type=? and ctime=curdate()", aid, seedType.sign.name());
+		if(num.intValue() == 0){
+			for(int i = 0; i<seedType.sign.point; i++){
+				Record seed = new  Record();
+				seed.set("aid", aid);
+				seed.set("send", 1);
+				seed.set("type", seedType.sign.name());
+				seed.set("remarks", seedType.sign.name);
+				seed.set("ctime", new Date());
+				result = Db.save("f_flowerseed", seed);
+			}
+		}
+		return result;
+	}
+	
+	// 订单数量统计 217
+	public static int[] orderCount(int aid) {
+		List<Record> list = Db.find("SELECT state FROM f_order WHERE aid = ?", aid);
+		int a = 0;
+		int b = 0;
+		int c = 0;
+		for(Record order : list){
+			if(order.getInt("state")==orderState.STATE0.state){// 未付款
+				a++;
+			}else if(order.getInt("state")==orderState.STATE1.state){// 服务中
+				b++;
+			}else if(order.getInt("state")==orderState.STATE3.state){// 已完成
+				c++;
+			}
+		}
+		int[] count = {a,b,c};
+		return count;
+	}
 
-
-	// 根据openId注册新用户
+	// 保存绑定号码 299
+	public static Map<String, Object> saveBinding(String number, String msgcode, String bindingcode, HttpSession session){
+		Map<String, Object> responseMap = new HashMap<String, Object>();// 返回信息
+		Record account = (Record) session.getAttribute("account");// 获得账号
+		boolean result = false;
+		String msg = "";
+		if(bindingcode == null){
+			msg = "验证码错误";
+		}else{
+			if(bindingcode.equals(msgcode)){
+				if(account.getStr("tel") == null){
+					for(int i = 0; i<seedType.binding.point; i++){
+						Record seed = new Record();
+						seed.set("aid", account.get("id"));
+						seed.set("send", 1);
+						seed.set("type", seedType.binding.name());
+						seed.set("remarks", seedType.binding.name);
+						seed.set("ctime", new Date());
+						Db.save("f_flowerseed", seed);
+					}
+				}
+				account.set("tel", number);
+				account.set("isfans", 0);
+				result = Db.update("f_account", account);
+				msg = "保存成功";
+			}else{
+				msg = "验证码错误";
+			}
+		}
+		responseMap.put("result", result);
+		responseMap.put("msg", msg);
+		return responseMap;
+	}
+	
+	
+	// 根据openId注册新用户 901
 	public static Record setAccount(String access_token, String openId, String typeId, String eventUserId){
 		Record account = Db.findFirst("select id,openid,nick,headimg,tel,recommend,isbuy,qrurl,state from f_account where openid = ?", openId);
 		if(account == null) {
@@ -196,6 +269,12 @@ public class FCDao {
 		return map;
 	}
 	
+	
+	//获得邀请好友内容 1100
+	public static String getInviteFriend(){
+		String yqhy = Db.queryStr("SELECT code_value FROM f_dictionary WHERE code_key = 'yqhy'");
+		return yqhy;
+	}
 }
 
 
