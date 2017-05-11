@@ -52,7 +52,7 @@ public class WeixinApiController extends ApiController {
 				"        {" +
                 "            \"name\": \"小美秘密\"," +
 				"            \"sub_button\": [" +
-				"            	{\"name\": \"测　　试\",\"type\": \"view\",\"url\": \"" + path + "/test\"}," +
+				"            	{\"name\": \"测　　试\",\"type\": \"view\",\"url\": \"" + path + "/test/index\"}," +
                 "            	{\"name\": \"生活美学\",\"type\": \"view\",\"url\": \"" + path + "/esthetics\"}," +
                 "				{\"name\": \"养护 | 搭配\",\"type\": \"view\",\"url\": \"" + path + "/knowledge\"}," +
                 "				{\"name\": \"晒 晒 晒\",\"type\": \"view\",\"url\": \"http://www.webei.cn/1b434a4e7d\"}," +

@@ -10,18 +10,33 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.weixin.sdk.api.AccessToken;
 import com.jfinal.weixin.sdk.api.ApiConfig;
 import com.jfinal.weixin.sdk.api.ApiResult;
 import com.jfinal.weixin.sdk.api.CustomServiceApi;
 import com.jfinal.weixin.sdk.api.GroupsApi;
 import com.jfinal.weixin.sdk.api.MessageApi;
+import com.jfinal.weixin.sdk.api.QrcodeApi;
+import com.jfinal.weixin.sdk.api.ShorturlApi;
+import com.jfinal.weixin.sdk.api.SnsAccessToken;
+import com.jfinal.weixin.sdk.api.SnsAccessTokenApi;
+import com.jfinal.weixin.sdk.api.SnsApi;
 import com.jfinal.weixin.sdk.api.TemplateMsgApi;
+import com.jfinal.weixin.sdk.api.UserApi;
 import com.jfinal.weixin.sdk.jfinal.ApiController;
+import com.jfinal.weixin.util.Constant;
 
 public class TestController extends ApiController {
-	ApiResult apiResult = null;
-	String openId = "oVOX00yKTd4dZAzVNbi7X4k3_Pdk";
-
+	private static ApiResult apiResult = null;
+	//String openId = "oVOX00yKTd4dZAzVNbi7X4k3_Pdk";
+	private static String openId = "oVOX00_xo-tSjfPE5ySJuUe7OywI";
+	private Date date = new Date();
+	private static String appId = PropKit.get("appId");
+	private static String appSecret = PropKit.get("appSecret");
+	private String redirect_uri = Constant.getHost + "/test/getAuthorizeURL";
+	private static boolean snsapiBase = false;
+	private String outMessage = "";
+	
 	@Override
 	public ApiConfig getApiConfig() {
 		ApiConfig ac = new ApiConfig();
@@ -39,7 +54,6 @@ public class TestController extends ApiController {
 	}
 	
 	public void customService(){
-		String openId = "oVOX00yKTd4dZAzVNbi7X4k3_Pdk";
 		apiResult = CustomServiceApi.sendText(openId, "text1");
 		apiResult = CustomServiceApi.sendText(openId, "text2");
 		apiResult = CustomServiceApi.sendImage(openId, "eIg_oqlG-qqRpE3XaRncgh32C59aHfhZcESUNPsX03AWSiVzuGsGEUBXtKO3A-7l");
@@ -125,7 +139,7 @@ public class TestController extends ApiController {
 	
 	// 修改分组名
 	public void groups_update(){
-		Date date = new Date();
+		
 		GroupsApi.update(109, date.toString());
 		apiResult = GroupsApi.get();
 		renderText(apiResult.toString());
@@ -141,7 +155,63 @@ public class TestController extends ApiController {
 	public void members_update(){
 		//Random groupid = new Random();
 		//GroupsApi.membersUpdate(openId, 1);
+		GroupsApi.membersUpdate(openId, 109);
 		apiResult = GroupsApi.getId(openId);
-		renderText(GroupsApi.membersUpdate(openId, 1).toString());
+		renderText(apiResult.toString());
+	}
+	
+	// 设置用户备注名
+	public void updateRemark(){
+		String remark = date.toString();
+		apiResult = UserApi.updateRemark(openId, remark);
+		renderText(apiResult.toString());
+	}
+	
+	// 获取用户基本信息(UnionID机制)
+	public void getUserInfo(){
+		apiResult = UserApi.getUserInfo(openId);
+		System.out.println(apiResult);
+		renderText(apiResult.toString());
+	}
+	
+	// 网页授权获取用户基本信息
+	public void getAuthorizeURL(){
+		// 首先，构造跳转到微信授权的地址
+		String code = SnsAccessTokenApi.getAuthorizeURL(appId, redirect_uri, snsapiBase);
+		System.out.println(code);
+		// 通过回调地址参数code获取access_token
+		SnsAccessToken accessToken =SnsAccessTokenApi.getSnsAccessToken(appId, appSecret, code);
+		String token = accessToken.getAccessToken();
+		// 拉取用户信息(需scope为 snsapi_userinfo)
+		apiResult =SnsApi.getUserInfo(token, openId);
+		renderText(code.toString());
+	}
+	
+	// 生成带参数的二维码QrcodeApi
+	// 创建临时二维码
+	public void createTemporary(){
+		/*String str = "{\"expire_seconds\": 604800, \"action_name\": \"QR_SCENE\", \"action_info\": {\"scene\": {\"scene_id\": 123}}}";
+        apiResult = QrcodeApi.create(str);*/
+		int expireSeconds = 604800;
+		int sceneId = 111;
+		apiResult = QrcodeApi.createTemporary(expireSeconds, sceneId);
+        JSONObject jsonObjec = JSONObject.parseObject(apiResult.getJson());
+        String ticket = jsonObjec.getString("ticket");
+        System.out.println(QrcodeApi.getShowQrcodeUrl(ticket));
+        outMessage = "apiResult: " + apiResult.getJson() +"\n"
+        		+ "QrcodeUrl: " + QrcodeApi.getShowQrcodeUrl(ticket);
+        renderText(outMessage);
+	}
+	
+	// 长链接转短链接接口ShorturlApi
+	public void getShortUrl(){
+		String longUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHJ8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ0JhdVJVa0JmUWoxMGVtdGhwMUgAAgSO2xNZAwSAOgkA";
+        apiResult = ShorturlApi.getShortUrl(longUrl);
+        JSONObject jsonObjec = JSONObject.parseObject(apiResult.getJson());
+        String shorUrl = jsonObjec.getString("short_url");
+		outMessage = "apiResult: " + apiResult.getJson() +"\n"
+				+ "longUrl: " + longUrl + "\n\n"
+        		+ "shorUrl: " + shorUrl;
+        renderText(outMessage);
 	}
 }
