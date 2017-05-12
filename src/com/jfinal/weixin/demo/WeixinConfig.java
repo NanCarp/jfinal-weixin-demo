@@ -57,7 +57,7 @@ public class WeixinConfig extends JFinalConfig {
 		me.add("/user",UserController.class);
 		me.add("/jssdk",ShareController.class,"_front");
 		
-		me.add("/test",TestController.class,"/front/test");
+		me.add("/test",TestApiController.class,"/front/test");
 		me.add("/account",AccountController.class,"/front/account");
 		
 		me.add("/", IndexController.class,"/front");

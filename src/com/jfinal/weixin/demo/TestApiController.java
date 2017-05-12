@@ -2,15 +2,18 @@ package com.jfinal.weixin.demo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.interceptor.FrontInterceptor;
+import com.jfinal.aop.Before;
+import com.jfinal.aop.Clear;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.weixin.sdk.api.AccessToken;
 import com.jfinal.weixin.sdk.api.AccessTokenApi;
 import com.jfinal.weixin.sdk.api.ApiConfig;
 import com.jfinal.weixin.sdk.api.ApiResult;
@@ -27,9 +30,11 @@ import com.jfinal.weixin.sdk.api.TemplateData;
 import com.jfinal.weixin.sdk.api.TemplateMsgApi;
 import com.jfinal.weixin.sdk.api.UserApi;
 import com.jfinal.weixin.sdk.jfinal.ApiController;
+import com.jfinal.weixin.sdk.jfinal.ApiInterceptor;
 import com.jfinal.weixin.util.Constant;
 
-public class TestController extends ApiController {
+@Before({FrontInterceptor.class, ApiInterceptor.class})
+public class TestApiController extends ApiController {
 	private static ApiResult apiResult = null;
 	//String openId = "oVOX00yKTd4dZAzVNbi7X4k3_Pdk";
 	private static String openId = "oVOX00_xo-tSjfPE5ySJuUe7OywI";
@@ -128,6 +133,55 @@ public class TestController extends ApiController {
 
 		 System.out.println(apiResult.getJson());
 		 renderText(apiResult.getJson());
+	}
+	
+	// 发送模板消息
+	public void sendTemplateMsg() {
+		
+		//String openid = getPara("openid").trim();// 用户 openid
+		String courseName = getPara("courseName");// 课程名称
+		String coursePrice = getPara("coursePrice");// 课程单价
+		String teacher = getPara("teacher");// 授课教师
+		
+		// 发送模板消息
+		apiResult = TemplateMsgApi.send(TemplateData.New()
+				// 消息接收者
+				.setTouser(openId)
+				// 模板id
+				.setTemplate_id("wpkda7JXBQJWi89RthfH8-x2IhBy8yWGMnaA-kmLytI")
+				.setTopcolor("#743A3A")
+				.setUrl("http://img2.3lian.com/2014/f5/158/d/86.jpg")
+				// 模板参数
+				.add("first", " 您好,欢迎使用模版消息!!\n", "#999")
+				.add("keyword1", " "+ courseName, "#999")
+				.add("keyword2", " "+ coursePrice +"元", "#999")
+				.add("keyword3", " "+ teacher, "#999")
+				.add("keyword4", " yyyy年MM月dd日 HH时mm分ss秒", "#999")
+				.add("remark", "\n您的订单已提交，我们将尽快发货，祝生活愉快! 点击可以查看详细信息。", "#999")
+				.build());
+
+		 //setAttr("opeid", openid);
+		 setAttr("courseName", courseName);
+		 setAttr("coursePrice", coursePrice);
+		 setAttr("teacher", teacher);
+		 
+		 System.out.println(apiResult.getJson());
+		 JSONObject jsonObject = JSON.parseObject(apiResult.toString());
+		 int errcode = jsonObject.getInteger("errcode");// 返回码
+		 String message = new String();// 提示消息
+		 switch(errcode){
+		 case 0 : 
+			 message = "发送成功";break;
+		 case -1: 
+			 message = "系统繁忙";break;
+		 default: 
+			 message = "发送失败";
+		 }
+		 Map<String, Object> data = new HashMap<String, Object>();
+		 data.put("errcode", errcode);
+		 data.put("message", message);
+		 
+		 renderJson(data);
 	}
 	
 	public void groups () {

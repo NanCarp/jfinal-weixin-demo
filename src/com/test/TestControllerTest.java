@@ -2,10 +2,10 @@ package com.test;
 
 import org.junit.Test;
 
-import com.jfinal.weixin.demo.TestController;
+import com.jfinal.weixin.demo.TestApiController;
 
 public class TestControllerTest {
-	private static TestController test = new TestController();
+	private static TestApiController test = new TestApiController();
 	
 	@Test
 	public void testGroups() {
