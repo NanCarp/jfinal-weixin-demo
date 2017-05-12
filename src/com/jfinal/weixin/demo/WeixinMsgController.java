@@ -38,7 +38,7 @@ public class WeixinMsgController extends MsgControllerAdapter {
 	public static String weahterContent;
 	public String Regex = "[\\+ ~!@#%^-_=]?";
 	static Log logger = Log.getLog(WeixinMsgController.class);
-	private static final String helpStr = /*"么么哒  美女等你好久了哦!! \n\n\t发送 help 可获得帮助，发送 \"美女\" 可看美女，发送 music 可听音乐 。\n\n"
+	private static final String helpStr = "么么哒  美女等你好久了哦!! \n\n\t发送 help 可获得帮助，发送 \"美女\" 可看美女，发送 music 可听音乐 。\n\n"
 			+ "1、人脸识别" + "\n" 
 			+ "2、在线翻译" + "\n" 
 			+ "3、天气查询" + "\n" 
@@ -61,15 +61,7 @@ public class WeixinMsgController extends MsgControllerAdapter {
 			+ "点击<a href='" + Constant.getHost + "/product/3'>【我要送花】</a>，传递情谊\n"
 			+ "花田直采，花量大、花新鲜、花期长，比比就知道！\n\n"
 			+ "更多操作！\n"
-			+ */"点击<a href='" + Constant.getHost + "/api/createmenu'>【更改菜单】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/customService'>【客服消息】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/message'>【群发消息】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/groups'>【用户分组管理】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/groups_create'>【创建用户分组】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/groups_delete'>【删除用户分组】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/groups_update'>【修改用户分组名】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/getGroupId'>【获取用户GroupID】</a>\n"
-			+ "点击<a href='" + Constant.getHost + "/test/members_update'>【移动用户分组】</a>\n"
+			+ "点击<a href='" + Constant.getHost + "/test/index'>【测试页面】</a>\n"
 			+ "点击<a href='" + Constant.getHost + "/'>【主页】</a>\n";
 
 	/**
@@ -235,7 +227,7 @@ public class WeixinMsgController extends MsgControllerAdapter {
 					// 消息接收者
 					.setTouser(inTextMsg.getFromUserName())
 					// 模板id
-					.setTemplate_id("tz1w-1fSN_Rzgj9_PjYuLU1EujvjPbtr1LL-_NtO6IM")
+					.setTemplate_id("3zh3d4eg4nvfzBqDtHz-eq57foHZtEyE3nOS5nhJN1A")
 					.setTopcolor("#743A3A")
 					.setUrl("http://img2.3lian.com/2014/f5/158/d/86.jpg")
 

@@ -11,8 +11,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.weixin.sdk.api.AccessToken;
+import com.jfinal.weixin.sdk.api.AccessTokenApi;
 import com.jfinal.weixin.sdk.api.ApiConfig;
 import com.jfinal.weixin.sdk.api.ApiResult;
+import com.jfinal.weixin.sdk.api.CallbackIpApi;
 import com.jfinal.weixin.sdk.api.CustomServiceApi;
 import com.jfinal.weixin.sdk.api.GroupsApi;
 import com.jfinal.weixin.sdk.api.MessageApi;
@@ -21,6 +23,7 @@ import com.jfinal.weixin.sdk.api.ShorturlApi;
 import com.jfinal.weixin.sdk.api.SnsAccessToken;
 import com.jfinal.weixin.sdk.api.SnsAccessTokenApi;
 import com.jfinal.weixin.sdk.api.SnsApi;
+import com.jfinal.weixin.sdk.api.TemplateData;
 import com.jfinal.weixin.sdk.api.TemplateMsgApi;
 import com.jfinal.weixin.sdk.api.UserApi;
 import com.jfinal.weixin.sdk.jfinal.ApiController;
@@ -49,10 +52,25 @@ public class TestController extends ApiController {
         return ac;
 	}
 
+	// 测试页面
 	public void index() {
 		render("test.html");
 	}
 	
+	// 获取接口调用凭据
+	// 利用AccessTokenApi获取access token
+	public void getAccessTokenStr(){
+		String accessTokenStr = AccessTokenApi.getAccessTokenStr();
+		renderText(accessTokenStr);
+	}
+	
+	// 利用 CallbackIpApi 获取微信服务器 IP 地址
+	public void getCallbackIp(){
+		apiResult = CallbackIpApi.getCallbackIp();
+		renderText(apiResult.toString());
+	}
+	
+	// 客服接口-发消息CustomServiceApi
 	public void customService(){
 		apiResult = CustomServiceApi.sendText(openId, "text1");
 		apiResult = CustomServiceApi.sendText(openId, "text2");
@@ -61,44 +79,55 @@ public class TestController extends ApiController {
 		renderText(apiResult.toString());
 	}
 	
+	// 高级群发接口 MessageApi
+	// 根据分组进行群发
 	public void message() {
-		String media_id = "eIg_oqlG-qqRpE3XaRncgh32C59aHfhZcESUNPsX03AWSiVzuGsGEUBXtKO3A-7l";	// 素材ID  ABmIJqX6-ZFJ4BE4zjZ0H1cYbi5HiAk_YsxyAzVpkwY
+		// String media_id = "K5ah2PbnSDqu64aNrQhTJ1ONvqDvdhALqfp56jtEoJZ9VoFUbqnQ7MBJpyWFmudl";	// 素材ID  K5ah2PbnSDqu64aNrQhTJ1ONvqDvdhALqfp56jtEoJZ9VoFUbqnQ7MBJpyWFmudl
+		String text = "群发消息 " + date.toString();
 		String jsonStr = new String();
 		jsonStr = "{" +
  				"	\"filter\":{\"is_to_all\":true},"+
- 				"	\"mpnews\":{\"media_id\":\"" + media_id + "\"},"+
- 				"	\"msgtype\":\"mpnews\"}";
+ 				"	\"text\":{\"content\":\"" + text + "\"},"+
+ 				"	\"msgtype\":\"text\"}";
 		apiResult = MessageApi.sendAll(jsonStr);
 		renderText(apiResult.toString());
 	}
 	
+	// 根据OpenID列表群发
+	public void message_send() {
+		String text = "根据OpenID列表群发" + date.toString();
+		String jsonStr = new String();
+		
+		renderText(apiResult.toString());
+	}
+	
+	// 模板消息操作页面
+	public void templateMsgUI(){
+		
+		
+		render("templage_massage.html");
+	}
+	
+	// 发送模板消息
 	public void templateMsg() {
-			String str = " {\n" +
-					"           \"touser\":\"ohbweuNYB_heu_buiBWZtwgi4xzU\",\n" +
-					"           \"template_id\":\"9SIa8ph1403NEM3qk3z9-go-p4kBMeh-HGepQZVdA7w\",\n" +
-					"           \"url\":\"http://www.sina.com\",\n" +
-					"           \"topcolor\":\"#FF0000\",\n" +
-					"           \"data\":{\n" +
-					"                   \"first\": {\n" +
-					"                       \"value\":\"恭喜你购买成功！\",\n" +
-					"                       \"color\":\"#173177\"\n" +
-					"                   },\n" +
-					"                   \"keyword1\":{\n" +
-					"                       \"value\":\"去哪儿网发的酒店红包（1个）\",\n" +
-					"                       \"color\":\"#173177\"\n" +
-					"                   },\n" +
-					"                   \"keyword2\":{\n" +
-					"                       \"value\":\"1元\",\n" +
-					"                       \"color\":\"#173177\"\n" +
-					"                   },\n" +
-					"                   \"remark\":{\n" +
-					"                       \"value\":\"欢迎再次购买！\",\n" +
-					"                       \"color\":\"#173177\"\n" +
-					"                   }\n" +
-					"           }\n" +
-					"       }";
-			ApiResult apiResult = TemplateMsgApi.send(str);
-			renderText(apiResult.toString());
+		apiResult = TemplateMsgApi.send(TemplateData.New()
+				// 消息接收者
+				.setTouser(openId)
+				// 模板id
+				.setTemplate_id("wpkda7JXBQJWi89RthfH8-x2IhBy8yWGMnaA-kmLytI")
+				.setTopcolor("#743A3A")
+				.setUrl("http://img2.3lian.com/2014/f5/158/d/86.jpg")
+
+				// 模板参数
+				.add("first", " 您好,欢迎使用模版消息!!\n", "#999")
+				.add("keyword1", " 微信公众平台测试", "#999")
+				.add("keyword2", " 39.8元", "#999")
+				.add("keyword3", " yyyy年MM月dd日 HH时mm分ss秒", "#999")
+				.add("remark", "\n您的订单已提交，我们将尽快发货，祝生活愉快! 点击可以查看详细信息。", "#999")
+				.build());
+
+		 System.out.println(apiResult.getJson());
+		 renderText(apiResult.getJson());
 	}
 	
 	public void groups () {
@@ -170,7 +199,12 @@ public class TestController extends ApiController {
 	// 获取用户基本信息(UnionID机制)
 	public void getUserInfo(){
 		apiResult = UserApi.getUserInfo(openId);
-		System.out.println(apiResult);
+		renderText(apiResult.toString());
+	}
+	
+	// 获取用户列表
+	public void getFollows(){
+		apiResult = UserApi.getFollows();
 		renderText(apiResult.toString());
 	}
 	
