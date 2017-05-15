@@ -137,7 +137,7 @@ public class TestApiController extends ApiController {
 	
 	// 发送模板消息
 	public void sendTemplateMsg() {
-		
+	
 		//String openid = getPara("openid").trim();// 用户 openid
 		String courseName = getPara("courseName");// 课程名称
 		String coursePrice = getPara("coursePrice");// 课程单价
@@ -145,63 +145,69 @@ public class TestApiController extends ApiController {
 		
 		// 发送模板消息
 		apiResult = TemplateMsgApi.send(TemplateData.New()
-				// 消息接收者
-				.setTouser(openId)
-				// 模板id
-				.setTemplate_id("wpkda7JXBQJWi89RthfH8-x2IhBy8yWGMnaA-kmLytI")
-				.setTopcolor("#743A3A")
-				.setUrl("http://img2.3lian.com/2014/f5/158/d/86.jpg")
-				// 模板参数
-				.add("first", " 您好,欢迎使用模版消息!!\n", "#999")
-				.add("keyword1", " "+ courseName, "#999")
-				.add("keyword2", " "+ coursePrice +"元", "#999")
-				.add("keyword3", " "+ teacher, "#999")
-				.add("keyword4", " yyyy年MM月dd日 HH时mm分ss秒", "#999")
-				.add("remark", "\n您的订单已提交，我们将尽快发货，祝生活愉快! 点击可以查看详细信息。", "#999")
-				.build());
-
-		 //setAttr("opeid", openid);
-		 setAttr("courseName", courseName);
-		 setAttr("coursePrice", coursePrice);
-		 setAttr("teacher", teacher);
-		 
-		 System.out.println(apiResult.getJson());
-		 JSONObject jsonObject = JSON.parseObject(apiResult.toString());
-		 int errcode = jsonObject.getInteger("errcode");// 返回码
-		 String message = new String();// 提示消息
-		 switch(errcode){
-		 case 0 : 
-			 message = "发送成功";break;
-		 case -1: 
-			 message = "系统繁忙";break;
-		 default: 
-			 message = "发送失败";
-		 }
-		 Map<String, Object> data = new HashMap<String, Object>();
-		 data.put("errcode", errcode);
-		 data.put("message", message);
-		 
-		 renderJson(data);
-	}
+			// 消息接收者
+			.setTouser(openId)
+			// 模板id
+			.setTemplate_id("wpkda7JXBQJWi89RthfH8-x2IhBy8yWGMnaA-kmLytI")
+			.setTopcolor("#743A3A")
+			.setUrl("http://img2.3lian.com/2014/f5/158/d/86.jpg")
+			// 模板参数
+			.add("first", " 您好,欢迎使用模版消息!!\n", "#999")
+			.add("keyword1", " "+ courseName, "#999")
+			.add("keyword2", " "+ coursePrice +"元", "#999")
+			.add("keyword3", " "+ teacher, "#999")
+			.add("keyword4", " yyyy年MM月dd日 HH时mm分ss秒", "#999")
+			.add("remark", "\n您的订单已提交，我们将尽快发货，祝生活愉快! 点击可以查看详细信息。", "#999")
+			.build());
 	
+			//setAttr("opeid", openid);
+			setAttr("courseName", courseName);
+			setAttr("coursePrice", coursePrice);
+			setAttr("teacher", teacher);
+			
+			System.out.println(apiResult.getInt("errcode"));
+			/*JSONObject jsonObject = JSON.parseObject(apiResult.toString());
+			int errcode = jsonObject.getInteger("errcode");// 返回码
+*/			int errcode = apiResult.getInt("errcode");// 返回码
+			String message = new String();// 提示消息
+			switch(errcode){
+			case 0 : 
+				message = "发送成功";break;
+			case -1: 
+				message = "系统繁忙";break;
+			default: 
+				message = "发送失败";
+			}
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("errcode", errcode);
+			data.put("message", message);
+			 
+			renderJson(data);
+		}
+	
+	// 获取用户分组列表
 	public void groups () {
 		
 		apiResult = GroupsApi.get();
 		JSONArray jsonArray = JSON.parseObject(apiResult.toString()).getJSONArray("groups");
-		JSONObject jsonObject = null;
 		List<Record> groups = new ArrayList<Record>();
 		Record group = new Record();
 		for(int i = 0; i < jsonArray.size(); i++){
 			//System.out.println(jsonArray.get(i));
-			jsonObject = (JSONObject) jsonArray.get(i);
+			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 			group.set("id", jsonObject.getInteger("id"));
 			group.set("name", jsonObject.getString("name"));
 			group.set("count", jsonObject.getInteger("count"));
 			groups.add(group);
 		}
 		System.out.println(groups);
-		setAttr("groups", groups);
-		
+		List<Record> groups1 = apiResult.getList("groups");
+		System.out.println(groups1);
+		/*for(Record group : groups){
+			System.out.println(group.getInt("id"));
+			System.out.println(group.getStr("name"));
+			System.out.println(group.getInt("count"));
+		}*/
 		renderText(apiResult.toString());
 	}
 	
