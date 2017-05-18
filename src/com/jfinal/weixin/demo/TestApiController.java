@@ -152,12 +152,12 @@ public class TestApiController extends ApiController {
 			.setTopcolor("#743A3A")
 			.setUrl("http://img2.3lian.com/2014/f5/158/d/86.jpg")
 			// 模板参数
-			.add("first", " 您好,欢迎使用模版消息!!\n", "#999")
-			.add("keyword1", " "+ courseName, "#999")
-			.add("keyword2", " "+ coursePrice +"元", "#999")
-			.add("keyword3", " "+ teacher, "#999")
-			.add("keyword4", " yyyy年MM月dd日 HH时mm分ss秒", "#999")
-			.add("remark", "\n您的订单已提交，我们将尽快发货，祝生活愉快! 点击可以查看详细信息。", "#999")
+			.add("first", " 您好,欢迎使用模版消息!!\n", "#666")
+			.add("keyword1", " "+ courseName, "#666")
+			.add("keyword2", " "+ coursePrice +"元", "#666")
+			.add("keyword3", " "+ teacher, "#666")
+			.add("keyword4", " yyyy年MM月dd日 HH时mm分ss秒", "#666")
+			.add("remark", "\n您的订单已提交，我们将尽快发货，祝生活愉快! 点击可以查看详细信息。", "#666")
 			.build());
 	
 			//setAttr("opeid", openid);
@@ -165,10 +165,10 @@ public class TestApiController extends ApiController {
 			setAttr("coursePrice", coursePrice);
 			setAttr("teacher", teacher);
 			
-			System.out.println(apiResult.getInt("errcode"));
-			/*JSONObject jsonObject = JSON.parseObject(apiResult.toString());
-			int errcode = jsonObject.getInteger("errcode");// 返回码
-*/			int errcode = apiResult.getInt("errcode");// 返回码
+			System.out.println(apiResult.getErrorCode());
+			System.out.println(apiResult.getErrorMsg());
+			
+			int errcode = apiResult.getInt("errcode");// 返回码
 			String message = new String();// 提示消息
 			switch(errcode){
 			case 0 : 
@@ -191,9 +191,9 @@ public class TestApiController extends ApiController {
 		apiResult = GroupsApi.get();
 		JSONArray jsonArray = JSON.parseObject(apiResult.toString()).getJSONArray("groups");
 		List<Record> groups = new ArrayList<Record>();
-		Record group = new Record();
-		for(int i = 0; i < jsonArray.size(); i++){
+		for(int i = 0, size = jsonArray.size(); i < size; i++){
 			//System.out.println(jsonArray.get(i));
+			Record group = new Record();
 			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 			group.set("id", jsonObject.getInteger("id"));
 			group.set("name", jsonObject.getString("name"));
@@ -201,14 +201,14 @@ public class TestApiController extends ApiController {
 			groups.add(group);
 		}
 		System.out.println(groups);
-		List<Record> groups1 = apiResult.getList("groups");
+		/*List<Record> groups1 = apiResult.getList("groups");
 		System.out.println(groups1);
-		/*for(Record group : groups){
+		for(Record group : groups1){
 			System.out.println(group.getInt("id"));
 			System.out.println(group.getStr("name"));
 			System.out.println(group.getInt("count"));
 		}*/
-		renderText(apiResult.toString());
+		renderJson(apiResult.getList("groups"));
 	}
 	
 	// 创建分组
