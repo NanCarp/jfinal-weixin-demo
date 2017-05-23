@@ -36,7 +36,7 @@ import com.jfinal.weixin.util.Constant;
 @Before({FrontInterceptor.class, ApiInterceptor.class})
 public class TestApiController extends ApiController {
 	private static ApiResult apiResult = null;
-	//String openId = "oVOX00yKTd4dZAzVNbi7X4k3_Pdk";
+	String openId1 = "oVOX00yKTd4dZAzVNbi7X4k3_Pdk";
 	private static String openId = "oVOX00_xo-tSjfPE5ySJuUe7OywI";
 	private Date date = new Date();
 	private static String appId = PropKit.get("appId");
@@ -77,9 +77,9 @@ public class TestApiController extends ApiController {
 	
 	// 客服接口-发消息CustomServiceApi
 	public void customService(){
-		apiResult = CustomServiceApi.sendText(openId, "text1");
-		apiResult = CustomServiceApi.sendText(openId, "text2");
-		apiResult = CustomServiceApi.sendImage(openId, "eIg_oqlG-qqRpE3XaRncgh32C59aHfhZcESUNPsX03AWSiVzuGsGEUBXtKO3A-7l");
+		apiResult = CustomServiceApi.sendText(openId1, "text1");
+		apiResult = CustomServiceApi.sendText(openId1, "text2");
+		apiResult = CustomServiceApi.sendImage(openId1, "fNliftTKMNJQeKKclryVhiwfvZN-eQc_heRVu-Nj8qAFKGt-g2hm7jWMVyAoV5xK");
 		//apiResult = CustomServiceApi.sendVideo(openId, "eIg_oqlG-qqRpE3XaRncgh32C59aHfhZcESUNPsX03AWSiVzuGsGEUBXtKO3A-7l","title","description");
 		renderText(apiResult.toString());
 	}
@@ -146,7 +146,7 @@ public class TestApiController extends ApiController {
 		// 发送模板消息
 		apiResult = TemplateMsgApi.send(TemplateData.New()
 			// 消息接收者
-			.setTouser(openId)
+			.setTouser(openId1)
 			// 模板id
 			.setTemplate_id("wpkda7JXBQJWi89RthfH8-x2IhBy8yWGMnaA-kmLytI")
 			.setTopcolor("#743A3A")
@@ -234,7 +234,7 @@ public class TestApiController extends ApiController {
 		renderText(apiResult.toString());
 	}
 	
-	// 获取用户GroupID
+	// 移动用户分组
 	public void getGroupId(){
 		GroupsApi.membersUpdate(openId, 0);
 		renderText(GroupsApi.getId(openId).toString());
@@ -244,7 +244,7 @@ public class TestApiController extends ApiController {
 	public void members_update(){
 		//Random groupid = new Random();
 		//GroupsApi.membersUpdate(openId, 1);
-		GroupsApi.membersUpdate(openId, 109);
+		GroupsApi.membersUpdate(openId, 117);
 		apiResult = GroupsApi.getId(openId);
 		renderText(apiResult.toString());
 	}
@@ -299,7 +299,7 @@ public class TestApiController extends ApiController {
 	
 	// 长链接转短链接接口ShorturlApi
 	public void getShortUrl(){
-		String longUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHJ8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ0JhdVJVa0JmUWoxMGVtdGhwMUgAAgSO2xNZAwSAOgkA";
+		String longUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHT7zwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyemlhcVFPa0JmUWoxM01GRk5wMW0AAgRw7x9ZAwSAOgkA";
         apiResult = ShorturlApi.getShortUrl(longUrl);
         JSONObject jsonObjec = JSONObject.parseObject(apiResult.getJson());
         String shorUrl = jsonObjec.getString("short_url");
